@@ -2,12 +2,18 @@ package controllers
 
 import (
 	"VueBlog/database"
+	"VueBlog/middlewares"
 	"VueBlog/models"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 )
 
 func AllUsers(c *fiber.Ctx) error {
+
+	if err := middlewares.IsAuthorized(c, "users"); err != nil {
+		return err
+	} //middlewaresten gelen bir kod parçası
+
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	/*	limit := 5
 		offset := (page - 1) * limit
@@ -31,6 +37,11 @@ func AllUsers(c *fiber.Ctx) error {
 }
 
 func CreateUser(c *fiber.Ctx) error {
+
+	if err := middlewares.IsAuthorized(c, "users"); err != nil {
+		return err
+	} //middlewaresten gelen bir kod parçası
+
 	var user models.User
 
 	if err := c.BodyParser(&user); err != nil {
@@ -47,6 +58,11 @@ func CreateUser(c *fiber.Ctx) error {
 }
 
 func GetUser(c *fiber.Ctx) error {
+
+	if err := middlewares.IsAuthorized(c, "users"); err != nil {
+		return err
+	} //middlewaresten gelen bir kod parçası
+
 	id, _ := strconv.Atoi(c.Params("id"))
 	user := models.User{
 		ID: uint(id),
@@ -56,6 +72,11 @@ func GetUser(c *fiber.Ctx) error {
 }
 
 func UpdateUser(c *fiber.Ctx) error {
+
+	if err := middlewares.IsAuthorized(c, "users"); err != nil {
+		return err
+	} //middlewaresten gelen bir kod parçası
+
 	id, _ := strconv.Atoi(c.Params("id"))
 	user := models.User{
 		ID: uint(id),
@@ -68,6 +89,11 @@ func UpdateUser(c *fiber.Ctx) error {
 }
 
 func DeleteUser(c *fiber.Ctx) error {
+
+	if err := middlewares.IsAuthorized(c, "users"); err != nil {
+		return err
+	} //middlewaresten gelen bir kod parçası
+
 	id, _ := strconv.Atoi(c.Params("id"))
 	user := models.User{
 		ID: uint(id),

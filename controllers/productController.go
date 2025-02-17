@@ -17,11 +17,19 @@ func CreateProduct(c *fiber.Ctx) error {
 	var product models.Product
 
 	if err := c.BodyParser(&product); err != nil {
-		return err
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid request body", "details": err.Error()})
 	}
 
-	database.DB.Create(&product)
-	return c.JSON(product)
+	// ID sıfırlanmasına gerek yok, GORM bunu otomatik yapar
+	result := database.DB.Create(&product)
+	if result.Error != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error":   "Failed to create product",
+			"details": result.Error.Error(),
+		})
+	}
+
+	return c.Status(201).JSON(product) // 201 status code ürün oluşturulduğunu belirtir
 }
 
 func GetProduct(c *fiber.Ctx) error {

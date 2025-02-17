@@ -3,7 +3,7 @@ package models
 import "gorm.io/gorm"
 
 type Product struct {
-	ID          uint    `json:"id"`
+	ID          uint    `gorm:"primaryKey;autoIncrement" json:"id"` // Otomatik artan ID
 	Title       string  `json:"title"`
 	Description string  `json:"description"`
 	Image       string  `json:"image"`

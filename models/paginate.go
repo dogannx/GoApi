@@ -11,7 +11,6 @@ func Paginate(db *gorm.DB, entity Entity, page int) fiber.Map {
 	offset := (page - 1) * limit
 
 	data := entity.Take(db, limit, offset)
-
 	total := entity.Count(db)
 
 	return fiber.Map{
@@ -19,7 +18,7 @@ func Paginate(db *gorm.DB, entity Entity, page int) fiber.Map {
 		"meta": fiber.Map{
 			"total":     total,
 			"page":      page,
-			"last_page": math.Ceil(float64(int(total) / limit)),
+			"last_page": math.Ceil(float64(total) / float64(limit)), // 🔥 Hata düzeltildi
 		},
 	}
 }

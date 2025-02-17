@@ -9,18 +9,29 @@ import (
 )
 
 func main() {
-
 	database.Connect()
 
-	// Initialize a new Fiber app
+	// Yeni Fiber uygulamasını başlat
 	app := fiber.New()
 
+	// Log middleware'i en başta ekleyelim
+	app.Use(func(c *fiber.Ctx) error {
+		log.Println("Gelen İstek:", c.Method(), c.OriginalURL())
+		log.Println("İstek Gövdesi:", string(c.Body()))
+		return c.Next()
+	})
+
+	// CORS ayarlarını düzenle
 	app.Use(cors.New(cors.Config{
-		AllowCredentials: true,
+		AllowOrigins:     "http://localhost:8080", // * yerine frontend adresini ekledik
+		AllowMethods:     "GET,POST,PUT,DELETE",   // HTTP metotlarına izin ver
+		AllowHeaders:     "Content-Type, Authorization",
+		AllowCredentials: true, // withCredentials kullanıldığı için true olmalı
 	}))
 
+	// Rotaları yükle
 	routes.Setup(app)
 
-	// Start the server on port 8080
-	log.Fatal(app.Listen(":8080"))
+	// Sunucuyu 8081 portunda başlat
+	log.Fatal(app.Listen(":8081"))
 }

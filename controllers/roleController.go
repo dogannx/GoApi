@@ -28,7 +28,7 @@ func CreateRole(c *fiber.Ctx) error {
 	permissions := make([]models.Permission, len(list))
 
 	for i, permissionId := range list {
-		id, _ := strconv.Atoi(permissionId.(string))
+		id := int(permissionId.(float64))
 		permissions[i] = models.Permission{
 			ID: uint(id),
 		}
@@ -71,7 +71,7 @@ func UpdateRole(c *fiber.Ctx) error {
 	permissions := make([]models.Permission, len(list))
 
 	for i, permissionId := range list {
-		id, _ := strconv.Atoi(permissionId.(string))
+		id := int(permissionId.(float64))
 		permissions[i] = models.Permission{
 			ID: uint(id),
 		}
@@ -96,10 +96,31 @@ func UpdateRole(c *fiber.Ctx) error {
 }
 
 func DeleteRole(c *fiber.Ctx) error {
-	id, _ := strconv.Atoi(c.Params("id"))
-	role := models.Role{
-		ID: uint(id),
+	// ID'yi al ve dönüşüm hatasını kontrol et
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid ID",
+		})
 	}
-	database.DB.Delete(&role)
-	return nil
+
+	// Silinecek rolü bul
+	role := models.Role{}
+	result := database.DB.First(&role, id)
+	if result.Error != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Role not found",
+		})
+	}
+
+	// Silme işlemi
+	if err := database.DB.Delete(&role).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to delete roleeeeee",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Role deleted successfully",
+	})
 }
